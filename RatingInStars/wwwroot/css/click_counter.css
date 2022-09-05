@@ -1,0 +1,22 @@
+﻿.clickCounterControls {
+    float: right;
+    margin-right: 10%;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    height:200px;
+}
+
+.plusButton {
+    background-color: greenyellow;
+    color: #fff
+}
+
+.minusButton {
+    background-color: darkred;
+    color: #fff
+}
+
+.clickCounterTextField {
+    width: 4ch;
+    text-align:center;
+}

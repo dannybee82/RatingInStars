@@ -1,0 +1,73 @@
+﻿/*
+ * Collapsable menu for colors.
+ *
+ */
+
+.menuButton {
+    width: auto;
+    display: block;
+    margin: auto;
+    white-space: nowrap;
+}
+
+.triangle:after {
+    content: "\25BC";
+    float: right;
+    clear: both
+}
+
+.ButtonSettingsMenu {
+    width: 300px;
+    display: block;
+    background-color: white;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    border: 1px solid #000;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 5px;
+}
+
+.ButtonSettingsMenu:hover {
+    color: #b3b300;
+    border: 1px solid #b3b300;
+}
+
+#SettingsContainer {
+    background-color: #f2f2f2;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 3px;
+    opacity: 0.85;
+}
+
+.SettingsMenuItem {
+    list-style-type: none;
+    width: 30px;
+    height: 30px;
+    margin-top: 5px;
+    float: left;
+    clear: right;
+    margin-right: 1px;
+    padding: 5px;
+    border: 1px solid #000;
+    border-radius: 5px
+}
+
+.SettingsMenuItem:last-child {
+    margin-bottom: 5px;
+}
+
+.SettingsMenuItem:hover {
+    cursor: default
+}
+
+.colorSelectionCloseButton {
+    position: relative;
+    float: right;
+    margin-top: 25px;
+}

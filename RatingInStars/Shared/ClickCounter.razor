@@ -1,0 +1,57 @@
+﻿<div class="clickCounterControls">
+	<button class="minusButton" type="button" @onclick="Decrement">-</button>
+	<input class="clickCounterTextField" type="text" @bind="@ShowText" readonly />
+	<button class="plusButton" type="button" @onclick="Increment">+</button>
+</div>
+
+@code {
+	[Parameter]
+	public string ShowText { get; set; } = string.Empty;
+
+	[Parameter]
+	public int StartValue { get; set; }
+
+	[Parameter]
+	public int MinValue { get; set; }
+
+	[Parameter]
+	public int MaxValue { get; set; }
+
+	[Parameter]
+	public EventCallback<int> MethodCallback { get; set; }
+
+	private int currentCounter;
+
+	private void Decrement()
+	{
+		currentCounter -= 1;
+
+		if (currentCounter < MinValue)
+		{
+			currentCounter = MinValue;
+		}
+
+		MethodCallback.InvokeAsync(currentCounter);
+	}
+
+	private void Increment()
+	{
+		currentCounter += 1;
+
+		if (currentCounter > MaxValue)
+		{
+			currentCounter = MaxValue;
+		}
+
+		MethodCallback.InvokeAsync(currentCounter);
+	}
+
+	protected override void OnAfterRender(bool isFirst)
+	{
+		if (isFirst)
+		{
+			currentCounter = StartValue;
+		}				
+	}
+	
+}

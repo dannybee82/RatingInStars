@@ -1,0 +1,646 @@
+﻿@page "/"
+@using ImageMethods
+@using RatingInStars.ApplicationMethods
+@using RatingInStars.Data
+@using RatingInStars.Model
+
+<PageTitle>Rating in Stars</PageTitle>
+
+<div class="ratingInStarsMenu">
+
+	<EditForm Model="@validationModel" OnValidSubmit="ApplyChanges">
+	<DataAnnotationsValidator />
+
+		<div class="ratingInStarsMenuTitle">Change Settings Below:</div>
+
+		<div class="ratingInStarsAllowChanges">
+			<label>Allow Changes in Stars:</label>
+			<InputRadioGroup Name="allowChanges" @bind-Value=validationModel.AllowChanges>
+				<InputRadio Value="@true" id="rb_yes" /><label for="rb_yes">Yes, users can change stars</label>
+				<InputRadio Value="@false" id="rb_no" /><label for="rb_no">No, the stars are fixed</label>
+			</InputRadioGroup>
+		</div>
+
+		<div class="ratingInStarsFilledStars">
+			<label>Use Type Stars:</label>
+			<InputRadioGroup Name="setType" @bind-Value=validationModel.UseType >
+				<InputRadio Value=0 id="rb1" @onclick="@(() => UpdatePreview(0))" /><label for="rb1">Use Filled Stars</label>
+				<InputRadio Value=1 id="rb2" @onclick="@(() => UpdatePreview(1))" /><label for="rb2">Use Border Stars</label>
+				<InputRadio Value=2 id="rb3" @onclick="@(() => UpdatePreview(2))" /><label for="rb3">Use Custom Stars</label>
+			</InputRadioGroup>
+		</div>
+
+		<div class="ratingInStarsExternalLink">
+			To use more RGB-colors, see: <a href="https://www.w3schools.com/colors/colors_picker.asp" title="W3Schools HTML Color Picker" target="_blank">W3Schools HTML Color Picker</a>
+		</div>
+
+		<div class="ratingInStarsChangeColor">
+			<div class="ratingInStarsChangeColorLabel">
+				<label>Primary Color / Selected Color - RGB:</label>
+			</div>
+			<div class="ratingInStarsChangeColorTextField">
+				<InputText id="primaryColorRgb" @bind-Value="validationModel.PrimaryColorRgb" @oninput="@((ChangeEventArgs args) => PreviewColor(args, 0))" />
+			</div>
+			<div class="ratingInStarsChangeColorPreview" style="@previewColorPrimaryColor" />
+			<div class="ratingInStarsChangePredifinedColorsContainer">
+				<CollapsableMenuColors ButtonText="Primary Color" IsCollapsed=@isPrimaryColorCollapsed PredefinedColorsNames=@allPredifinedColorNames 
+				MethodToUse=@SetPrimaryColor Location=null />
+			</div>
+			<div class="ratingInStarsSelectFileButton">
+				@if(GetCurrentType() == 2)
+				{
+					<label class="ratingInStarsSelectFileButtonLabel" for="if1">Select Empty Png File ...</label>
+					<InputFile OnChange="@LoadEmptyPngFile" accept=".png" id="if1" style="display:none" />
+				}
+				else
+				{
+					<label class="ratingInStarsSelectFileButtonLabel labelDisabled">Select Empty Png File ...</label>
+				}				
+			</div>
+			<div class="ratingInStarsPreviewPngFile">
+				@if (!string.IsNullOrWhiteSpace(sourceEmptyImage))
+				{
+					<img src="@sourceEmptyImage" alt="Preview Empty Image" title="Preview Empty Image" width=45 height="45 " />
+				}				
+			</div>
+			<div class="ratingInStarsPreviewPngError">
+				@if (!string.IsNullOrWhiteSpace(errorEmptyImage))
+				{
+					@errorEmptyImage
+				}				
+			</div>
+		</div>
+
+		<div class="ratingInStarsChangeColor">
+			<div class="ratingInStarsChangeColorLabel">
+				<label>Secondary Color / Unselected Color - RGB:</label>
+			</div>
+			<div class="ratingInStarsChangeColorTextField">
+				<InputText id="secondaryColorRgb" @bind-Value="validationModel.SecondaryColorRgb"  @oninput="@((ChangeEventArgs args) => PreviewColor(args, 1))" />
+			</div>
+			<div class="ratingInStarsChangeColorPreview" style="@previewColorSecondaryColor" />
+			<div class="ratingInStarsChangePredifinedColorsContainer">
+				<CollapsableMenuColors ButtonText="Secondary Color" IsCollapsed=@isPrimaryColorCollapsed PredefinedColorsNames=@allPredifinedColorNames 
+				MethodToUse=@SetSecondaryColor Location=null />
+			</div>
+			<div class="ratingInStarsSelectFileButton">
+				@if (GetCurrentType() == 2)
+				{
+					<label class="ratingInStarsSelectFileButtonLabel" for="if2">Select Filled Png File ...</label>
+					<InputFile OnChange="@LoadFilledPngFile" accept=".png" id="if2" style="display:none" />					
+				}
+				else
+				{
+					<label class="ratingInStarsSelectFileButtonLabel labelDisabled">Select Filled Png File ...</label>
+				}
+			</div>
+			<div class="ratingInStarsPreviewPngFile">
+				@if (!string.IsNullOrWhiteSpace(sourceFilledImage))
+				{
+					<img src="@sourceFilledImage" alt="Preview Filled Image" title="Preview Filled Image" width=45 height="45 " />
+				}
+			</div>
+			<div class="ratingInStarsPreviewPngError">
+				@if (!string.IsNullOrWhiteSpace(errorFilledImage))
+				{
+					@errorFilledImage
+				}				
+			</div>
+		</div>
+
+		<div class="ratingInStarsChangeColor">
+			<div class="ratingInStarsChangeColorLabel">
+				<label>Change Background Color - RGB:</label>
+			</div>
+			<div class="ratingInStarsChangeColorTextField">
+				<InputText id="backgroundColorRgb" @bind-Value="validationModel.BackgroundColorRgb" @oninput="@((ChangeEventArgs args) => PreviewColor(args, 2))" />
+			</div>
+			<div class="ratingInStarsChangeColorPreview" style="@previewColorBackgroundColor" />
+			<div class="ratingInStarsChangePredifinedColorsContainer">
+				<CollapsableMenuColors ButtonText="Background Color" IsCollapsed=@isPrimaryColorCollapsed PredefinedColorsNames=@allPredifinedColorNames
+				MethodToUse=@SetBackgroundColor Location=null />
+			</div>
+			<div class="ratingInStarsSelectFileButton">
+				@if (GetCurrentType() == 2)
+				{
+					<label class="ratingInStarsSelectFileButtonLabel" for="if3">Select Half Png File ...</label>
+					<InputFile OnChange="@LoadHalfPngFile" accept=".png" id="if3" style="display:none"/>					
+				}
+				else
+				{
+					<label class="ratingInStarsSelectFileButtonLabel labelDisabled">Select Half Png File ...</label>
+				}
+			</div>
+			<div class="ratingInStarsPreviewPngFile">
+				@if (!string.IsNullOrWhiteSpace(sourceHalfImage))
+				{
+					<img src="@sourceHalfImage" alt="Preview Half Image" title="Preview Half Image" width=45 height="45 " />
+				}
+			</div>
+			<div class="ratingInStarsPreviewPngError">
+				@if (!string.IsNullOrWhiteSpace(errorHalfImage))
+				{
+					@errorHalfImage
+				}				
+			</div>
+		</div>
+
+		<div class="ratingInStarsCurrentStars">
+			<div class="ratingInStarsCurrentStarsLabel">
+				<label>Set Rating in Stars:</label>
+			</div>
+			<div class="ratingInStarsCurrentStarsComponent">
+				<ClickCounter ShowText=@availableStarSelectedString StartValue=@availableStarSelected MinValue=0 MaxValue=10 MethodCallback=ChangeSelectedStar />
+			</div>
+		</div>
+				
+		<div class="ratingInStarsMargins">
+			<label>Margin Left:</label>
+			<InputNumber id="marginLeft" @bind-Value=@validationModel.MarginLeft />
+		</div>
+
+		<div class="ratingInStarsMargins">
+			<label>Margin Right:</label>
+			<InputNumber id="marginRight" @bind-Value=@validationModel.MarginRight  />
+		</div>
+
+		<div class="ratingInStarsSelectSize">
+			<label>Select Star size:</label>
+			<InputSelect @bind-Value=validationModel.StarSize>
+				@foreach (int size in sizes)
+				{
+					<option value="@size"><span>@helperMethods.CreateLabel(size)</span></option>
+				}
+			</InputSelect>
+		</div>
+
+		<div class="additionalErrors">
+			<ValidationSummary />
+			@additionalErrors
+		</div>
+
+		<div class="inputText">
+			<button type="submit">Apply Changes</button>
+		</div>
+	</EditForm>
+</div>
+
+<div class="ratingInStarsDemoContainer">
+	<div class="ratingInStarsDemoContainerLabel">DEMO</div>
+	<StarsRating AllowChanges=@demoAllowChanges CurrentRatingInStars=@demoCurrentRatingInStars MarginLeft=@demoMarginLeft MarginRight=@demoMarginRight
+	StarSize=@demoStarSize StarTypeToUse=@demoStarTypeToUse CustomStarImagesToUse=@demoPngImages CallBackMethod=@ShowSelectedStars
+	BackgroundColor=@demoBackgroundColor />
+	<div class="ratingInStarsDemoContainerLabel showStarsSelected">Stars selected: @demoCurrentRatingInStars</div>
+</div>
+
+
+<div class="showRatingInStarsCodeContainer">
+	<div class="showCodeButton" @onclick="GenerateCode">Show Code & Instructions</div>
+
+	<div class="showCodeFileNameOrDataString">
+		<em>Use PNG or Data64String:</em>
+		<input type="radio" value="png" name="group1" id="usePngImages" checked="checked" @onchange="@(() => ChangeUsePngOrDataString(true))"><label for="usePngImages">Use Png Images</label>
+		<input type="radio" value="data64" name="group1" id="useDataString" @onchange="@(() => ChangeUsePngOrDataString(false))"><label for="useDataString">Use Data64 String</label>
+	</div>
+
+	
+
+	@if (showGeneratedCode)
+	{
+		@if (showPngImagesToSaveThem)
+		{
+			<div class="showCodePreparedImages">
+				<div class="showCodePreparedImagesLabel">Save this 3 Images to your <b>wwwroot/images/</b> as: <b>custom_empty.png</b>, <b>custom_filled.png</b>, <b>custom_half.png</b></div>
+				<div class="showCodePreparedImagesPNG"><img src="@demoPngImages[0]" alt="custom_empty.png" title="custom_empty.png" name="custom_empty.png" /></div>
+				<div class="showCodePreparedImagesPNG"><img src="@demoPngImages[1]" alt="custom_filled.png" title="custom_filled.png" name="custom_filled.png" /></div>
+				<div class="showCodePreparedImagesPNG"><img src="@demoPngImages[2]" alt="custom_half.png" title="custom_half.png" name="custom_half.png" /></div>
+			</div>
+		}
+
+		@if (isUsingDefaultImages && !showPngImagesToSaveThem)
+		{
+			<div class="showCodePreparedImagesLabel">Copy & Paste the default png-images from this <b>wwwroot/images/</b> to your: <b>wwwroot/images/</b></div>
+		}
+
+		<div class="showCodeLabel">Use <b>stars_rating.css</b> (in <b>wwwroot/css/</b>) from this project and place it your: <b>wwwroot/css/</b>. Add a reference to this css-file in the head of the page (usually in <b>_Layout.cshtml</b>):</div>
+		<div class="showCodeTheCode">
+			<pre>
+				<code>
+					@linkToCss
+				</code>
+			</pre>
+		</div>
+
+		<div class="showCodePreparedImagesLabel">Copy & Paste the file: <b>StarsRating.razor</b> from the <b>Shared</b> folder to your Shared folder.</div>
+
+		<div class="showCodeLabel"><b>Copy & Paste the code below to your project:</b></div>
+		<div class="showCodeTheCode">
+			<code>
+				@generatedCode
+			</code>
+		</div>
+	}
+
+</div>
+
+@code {
+	//Get all pre-defined color names and hex values.
+	private string[] allPredifinedColorNames = PredefinedColorsFonts.GetAllPredifinedColorsByName();
+	private string[] allPredifinedColorHexes = PredefinedColorsFonts.GetAllPredifinedColorsByHex();
+
+	private bool isPrimaryColorCollapsed = true;
+
+	private string additionalErrors = "";
+
+	private string generatedCode = "";
+
+	private bool isUsingModifiedImages = false;
+	private bool isUsingUploadedImages = false;
+	private bool isUsingDefaultImages = true;
+
+	private bool showGeneratedCode = false;
+
+	private string rgbColorBlack = "0, 0, 0";
+	private string rgbColorGrey = "169, 169, 169";
+
+	/*
+	* Values and methods for menu, etc.
+	* 
+	*/
+
+	private HelperMethods helperMethods = new();
+	private ImageMethods imageMethods = new ImageMethods();
+	private LoadImageFile loadImageFile = new();
+	private ValidationModel validationModel = new();
+	private GenerateCode generateCode = new();
+
+	private string previewColorPrimaryColor = "background-color:gold";
+	private string previewColorSecondaryColor = "background-color:black";
+	private string previewColorBackgroundColor = "background-color:white";
+
+	private int[] sizes;
+
+	private double[] availableStars = new double[] { 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0 };
+	private int availableStarSelected = 0;
+	private string availableStarSelectedString = "0.0";
+
+	private string borderStarPathToEmpty = $"{Directory.GetCurrentDirectory()}{@"\wwwroot\images\"}" + "border_star_empty.png";
+	private string borderStarPathToFilled = $"{Directory.GetCurrentDirectory()}{@"\wwwroot\images\"}" + "border_star_filled.png";
+	private string borderStarPathToHalf = $"{Directory.GetCurrentDirectory()}{@"\wwwroot\images\"}" + "border_star_half.png";
+
+	private string filledStarPathToEmpty = $"{Directory.GetCurrentDirectory()}{@"\wwwroot\images\"}" + "full_star_empty.png";
+	private string filledStarPathToFilled = $"{Directory.GetCurrentDirectory()}{@"\wwwroot\images\"}" + "full_star_filled.png";
+	private string filledStarPathToHalf = $"{Directory.GetCurrentDirectory()}{@"\wwwroot\images\"}" + "full_star_half.png";
+
+	private string sourceEmptyImage = "";
+	private string sourceFilledImage = "";
+	private string sourceHalfImage = "";
+
+	private string errorEmptyImage = "";
+	private string errorFilledImage = "";
+	private string errorHalfImage = "";
+
+	private string fileNameEmptyImage = "";
+	private string fileNameFilledImage = "";
+	private string fileNameHalfImage = "";
+
+	private bool usePngImageForCode = true;
+	private bool showPngImagesToSaveThem = false;
+
+	private string linkToCss = "<link href=\"css/stars_rating.css\" rel=\"stylesheet\" />";
+
+	/*
+	* Use values for current Demo.
+	* 
+	*/
+
+	int[] darkgrey = new int[] { 169, 169, 169 };
+	int[] gold = new int[] { 255, 215, 0 };
+	int[] black = new int[] { 0, 0, 0 };
+
+	int[] secondColor = null;
+
+	private bool demoAllowChanges = true;
+	private double demoCurrentRatingInStars = 0.0;
+	private int demoMarginLeft = 15;
+	private int demoMarginRight = 15;
+	private int demoStarSize = 45;
+	private int demoStarTypeToUse = 0;
+	private string[] demoPngImages = null;
+	private string demoBackgroundColor = "#ffffff";
+
+	private void ApplyChanges() {
+		showGeneratedCode = false;
+
+		//Set values.
+		demoAllowChanges = validationModel.AllowChanges;
+		demoCurrentRatingInStars = validationModel.CurrentStarRating;
+		demoMarginLeft = validationModel.MarginLeft;
+		demoMarginRight = validationModel.MarginRight;
+		demoStarSize = validationModel.StarSize;
+		demoStarTypeToUse = validationModel.UseType;
+		demoBackgroundColor = helperMethods.getHexString(validationModel.BackgroundColorRgb);
+
+		int[] demoPrimaryColors = helperMethods.stringToIntArray( validationModel.PrimaryColorRgb );
+		int[] demoSecondaryColors = helperMethods.stringToIntArray(validationModel.SecondaryColorRgb);
+		int[] demoBackgroundColors = helperMethods.stringToIntArray(validationModel.BackgroundColorRgb);
+
+		string demoPathToEmpty = "";
+		string demoPathToFilled = "";
+		string demoPathToHalf = "";
+
+		if(demoStarTypeToUse == 0) 
+		{
+			demoPathToEmpty = filledStarPathToEmpty;
+			demoPathToFilled = filledStarPathToFilled;
+			demoPathToHalf = filledStarPathToHalf;
+
+			secondColor = black;
+		}
+
+		if(demoStarTypeToUse == 1) 
+		{
+			demoPathToEmpty = borderStarPathToEmpty;
+			demoPathToFilled = borderStarPathToFilled;
+			demoPathToHalf = borderStarPathToHalf;
+
+			secondColor = darkgrey;
+		}
+
+		if(demoStarTypeToUse == 2) 
+		{
+			isUsingModifiedImages = true;
+
+			demoPngImages = new string[3];
+
+			bool hasValidContent = helperMethods.HasAllOrNoneContent(new string[] { sourceEmptyImage, sourceFilledImage, sourceHalfImage });
+
+			if(hasValidContent) 
+			{
+				isUsingUploadedImages = true;
+				isUsingDefaultImages = false;
+
+				demoPngImages[0] = sourceEmptyImage;
+				demoPngImages[1] = sourceFilledImage;
+				demoPngImages[2] = sourceHalfImage;
+			}
+			else
+			{
+				additionalErrors = "Select all PNG files!";
+			}
+
+		}
+
+		if (demoStarTypeToUse == 0 || demoStarTypeToUse == 1)
+		{
+			byte[] demoEmpty;
+			byte[] demoFilled;
+			byte[] demoHalf;
+
+			if (!helperMethods.AreIntArraysEqual(secondColor, demoSecondaryColors) || !helperMethods.AreIntArraysEqual(gold, demoPrimaryColors))
+			{
+				isUsingModifiedImages = true;
+				isUsingDefaultImages = false;
+
+				//Below: keep the original size !!! Original size = 45 !!!
+				//double calculateHalf = 45.0 / 2.0;
+				int demoHalfStarSize = 22;
+
+				demoEmpty = imageMethods.ReplaceColor(demoPathToEmpty, secondColor, demoSecondaryColors);
+				demoFilled = imageMethods.ReplaceColor(demoPathToFilled, gold, demoPrimaryColors);
+				demoHalf = imageMethods.ReplaceColor(demoPathToHalf, demoHalfStarSize, gold, demoPrimaryColors, secondColor, demoSecondaryColors);
+
+				demoStarTypeToUse = 2;
+
+				demoPngImages = new string[3];
+				demoPngImages[0] = helperMethods.ConvertToPngDataString(demoEmpty);
+				demoPngImages[1] = helperMethods.ConvertToPngDataString(demoFilled);
+				demoPngImages[2] = helperMethods.ConvertToPngDataString(demoHalf);
+			}
+			else
+			{
+				demoPngImages = null;
+				isUsingDefaultImages = true;
+			}
+		}
+
+		StateHasChanged();
+	}
+
+	private void ChangeSelectedStar(int value) 
+	{
+		availableStarSelectedString = availableStars[value] + "";
+		validationModel.CurrentStarRating = availableStars[value];
+	}
+
+	private void ShowSelectedStars(double selected) 
+	{
+		demoCurrentRatingInStars = selected;
+	}
+
+	private void ChangeStarSize(int size) 
+	{
+		validationModel.StarSize = size;
+	}
+
+	private void PreviewColor(ChangeEventArgs args, int field)
+	{
+		string value = (string)args.Value;
+
+		if (helperMethods.AreValuesValid(value))
+		{
+			string hex = helperMethods.getHexString(value);			
+
+			if (field == 0)
+			{
+				validationModel.PrimaryColorRgb = value;
+				previewColorPrimaryColor = "background-color:" + hex;
+			}
+
+			if (field == 1)
+			{
+				validationModel.SecondaryColorRgb = value;
+				previewColorSecondaryColor = "background-color:" + hex;
+			}
+
+			if (field == 2)
+			{
+				validationModel.BackgroundColorRgb = value;
+				previewColorBackgroundColor = "background-color:" + hex;
+			}
+		}		
+	}
+
+	private void SetPrimaryColor(int value) 
+	{
+		if(value > -1) 
+		{
+			string rgb = helperMethods.ConvertHexToIntegers(allPredifinedColorHexes[value]);
+			validationModel.PrimaryColorRgb = rgb;
+			previewColorPrimaryColor = "background-color:" + allPredifinedColorHexes[value];
+		}
+	}
+
+	private void SetSecondaryColor(int value) 
+	{
+		if(value > -1) 
+		{
+			string rgb = helperMethods.ConvertHexToIntegers(allPredifinedColorHexes[value]);
+			validationModel.SecondaryColorRgb = rgb;
+			previewColorSecondaryColor = "background-color:" + allPredifinedColorHexes[value];
+		}
+	}
+
+	private void SetBackgroundColor(int value) 
+	{
+		if(value > -1) 
+		{
+			string rgb = helperMethods.ConvertHexToIntegers(allPredifinedColorHexes[value]);
+			validationModel.BackgroundColorRgb = rgb;
+			previewColorBackgroundColor = "background-color:" + allPredifinedColorHexes[value];
+		}
+	}
+
+	private async void LoadEmptyPngFile(InputFileChangeEventArgs e)
+	{
+		LoadedImage response = await loadImageFile.GetImageAsDataString(e);
+		errorEmptyImage = response.ErrorMessage;
+		sourceEmptyImage = response.ImageAsPngData;
+		fileNameEmptyImage = response.ImageFileName;
+
+		if(response.IsLoaded)
+		{
+			CallStateChange(sourceEmptyImage);
+		}	
+	}
+
+	private async void LoadFilledPngFile(InputFileChangeEventArgs e)
+	{
+		LoadedImage response = await loadImageFile.GetImageAsDataString(e);
+		errorEmptyImage = response.ErrorMessage;
+		sourceFilledImage = response.ImageAsPngData;
+		fileNameFilledImage = response.ImageFileName;
+
+		if (response.IsLoaded)
+		{
+			CallStateChange(sourceFilledImage);
+		}
+	}
+
+	private async void LoadHalfPngFile(InputFileChangeEventArgs e)
+	{
+		LoadedImage response = await loadImageFile.GetImageAsDataString(e);
+		errorEmptyImage = response.ErrorMessage;
+		sourceHalfImage = response.ImageAsPngData;
+		fileNameHalfImage = response.ImageFileName;
+
+		if (response.IsLoaded)
+		{
+			CallStateChange(sourceHalfImage);
+		}
+	}
+
+	private int GetCurrentType() {
+		if(validationModel.UseType != 2) {
+			sourceEmptyImage = "";
+			sourceFilledImage = "";
+			sourceHalfImage = "";
+
+			errorEmptyImage = "";
+			errorFilledImage = "";
+			errorHalfImage = "";
+
+			fileNameEmptyImage = "";
+			fileNameFilledImage = "";
+			fileNameHalfImage = "";
+		}
+
+		return validationModel.UseType;
+	}
+
+	private void CallStateChange(string s) 
+	{
+		if (!string.IsNullOrEmpty(s))
+		{
+			StateHasChanged();
+		}
+	}
+
+	private void ChangeUsePngOrDataString(bool value) 
+	{
+		usePngImageForCode = value;
+	}
+
+	private void GenerateCode() 
+	{
+		generatedCode = "";
+		generatedCode += generateCode.GetStartTagRazorComponent();
+		generatedCode += generateCode.GetAllowedChanges(demoAllowChanges);
+		generatedCode += generateCode.GetCurrentRatingInStars(validationModel);
+		generatedCode += generateCode.GetPropertyAndValue("MarginLeft", demoMarginLeft);
+		generatedCode += generateCode.GetPropertyAndValue("MarginRight", demoMarginRight);
+		generatedCode += generateCode.GetPropertyAndValue("StarSize", demoStarSize);
+		generatedCode += generateCode.GetPropertyAndValue("StarTypeToUse", demoStarTypeToUse);
+		generatedCode += generateCode.GetBackgroundColor(demoBackgroundColor);
+		generatedCode += generateCode.GetCustomImagesToUse(isUsingModifiedImages);
+		generatedCode += generateCode.GetCallbackMethod(validationModel);
+		generatedCode += generateCode.GetEndTagRazorComponent();
+
+		generatedCode += generateCode.AddLineBreak();
+		generatedCode += generateCode.AddLineBreak();
+
+		generatedCode += generateCode.GetStartCodeTag();
+		generatedCode += generateCode.GetCodeCurrentRatingInStars(validationModel);
+
+		if(usePngImageForCode) 
+		{
+			//Get images path.
+			generatedCode += generateCode.GetImagesPath(demoStarTypeToUse, isUsingModifiedImages, isUsingUploadedImages, fileNameEmptyImage, fileNameFilledImage, fileNameHalfImage);
+		}
+		else
+		{
+			//Get data64-string.
+			generatedCode += generateCode.GetImagesAsBas64String(demoStarTypeToUse, isUsingModifiedImages, isUsingUploadedImages, demoPngImages);
+		}
+
+		generatedCode += generateCode.GetCallBackMethod(validationModel);
+		generatedCode += generateCode.GetEndCodeTag();
+
+		showPngImagesToSaveThem = generateCode.DetermineToSavePngImages(demoStarTypeToUse, isUsingModifiedImages, isUsingUploadedImages, usePngImageForCode);
+
+		showGeneratedCode = true;
+	}
+
+	private void UpdatePreview(int field) 
+	{
+		if (field == 0 && validationModel.SecondaryColorRgb.Equals(rgbColorGrey))
+		{
+			validationModel.SecondaryColorRgb = rgbColorBlack;
+			string hex = helperMethods.getHexString(validationModel.SecondaryColorRgb);
+			previewColorSecondaryColor = "background-color:" + hex;			
+		}
+
+		if (field == 1 && validationModel.SecondaryColorRgb.Equals(rgbColorBlack))
+		{
+			validationModel.SecondaryColorRgb = rgbColorGrey;
+			string hex = helperMethods.getHexString(validationModel.SecondaryColorRgb);
+			previewColorSecondaryColor = "background-color:" + hex;			
+		}
+	}
+
+	protected override void OnInitialized() {
+		sizes = helperMethods.GetSizes(12, 96);
+
+		validationModel.UseType = 0;
+
+		validationModel.PrimaryColorRgb = "255, 215, 0";
+		validationModel.SecondaryColorRgb = "0, 0, 0";
+		validationModel.BackgroundColorRgb = "255, 255, 255";
+
+		validationModel.StarSize = 45;
+
+		validationModel.MarginLeft = 15;
+		validationModel.MarginRight = 15;
+	}
+
+}

@@ -1,0 +1,428 @@
+﻿<div class="ratingContainer" style="@BackgroundColor" @onmousemove="HandleMouse" @onclick="SlideStatus" @onmouseout="SelectCurrentStar">
+	<div class="star @disableHoverOnStar" style="@startStyle">
+		<img src="@star1" width="@starSizestr" height="@starSizestr" @onmousemove="@((MouseEventArgs e) => HandleMouseMovementChild(e, 0))" @onclick="@((MouseEventArgs e) => HandleMouseClickChild(e, 0))"
+		@onmousemove:stopPropagation="true" />
+	</div>
+	<div class="star @disableHoverOnStar" style="@startStyle">
+		<img src="@star2" width="@starSizestr" height="@starSizestr" @onmousemove="@((MouseEventArgs e) => HandleMouseMovementChild(e, 1))" @onclick="@((MouseEventArgs e) => HandleMouseClickChild(e, 1))"
+		@onmousemove:stopPropagation="true" />
+	</div>
+	<div class="star @disableHoverOnStar" style="@startStyle">
+		<img src="@star3" width="@starSizestr" height="@starSizestr" @onmousemove="@((MouseEventArgs e) => HandleMouseMovementChild(e, 2))" @onclick="@((MouseEventArgs e) => HandleMouseClickChild(e, 2))"
+		@onmousemove:stopPropagation="true" />
+	</div>
+	<div class="star @disableHoverOnStar" style="@startStyle">
+		<img src="@star4" width="@starSizestr" height="@starSizestr" @onmousemove="@((MouseEventArgs e) => HandleMouseMovementChild(e, 3))" @onclick="@((MouseEventArgs e) => HandleMouseClickChild(e, 3))"
+		@onmousemove:stopPropagation="true" />
+	</div>
+	<div class="star @disableHoverOnStar" style="@startStyle">
+		<img src="@star5" width="@starSizestr" height="@starSizestr" @onmousemove="@((MouseEventArgs e) => HandleMouseMovementChild(e, 4))" @onclick="@((MouseEventArgs e) => HandleMouseClickChild(e, 4))"
+		@onmousemove:stopPropagation="true" />
+	</div>	
+</div>
+
+@code {
+	[Parameter]
+	public bool AllowChanges { get; set; }
+
+	[Parameter]
+	public double CurrentRatingInStars { get; set; } = 0.0;
+
+	[Parameter]
+	public int MarginLeft { get; set; }
+
+	[Parameter]
+	public int MarginRight { get; set; }
+
+	[Parameter]
+	public int StarSize { get; set; }
+
+	[Parameter]
+	public int StarTypeToUse { get; set; }
+
+	[Parameter]
+	public string[] CustomStarImagesToUse { get; set; } = null!;
+
+	[Parameter]
+	public string BackgroundColor { get; set; } = null!;
+
+	[Parameter]
+	public EventCallback<double> CallBackMethod { get; set; }
+
+	private int[]? startPoints = null!;
+	private int[]? endPoints = null!;
+
+	private int totalAmountOfStars = 5;
+
+	private int halfStarSize;
+
+	private string star1 = "";
+	private string star2 = "";
+	private string star3 = "";
+	private string star4 = "";
+	private string star5 = "";
+
+	private string fullStar = "";
+	private string halfStar = "";
+	private string emptyStar = "";
+
+	private string startStyle = "";
+	private string starSizestr = "";
+
+	private bool slideOverStars = true;
+
+	private DateTime lastEventForThrottle = DateTime.Now;
+
+	private string disableHoverOnStar = "";
+
+	private string GetPixels(int size) 
+	{
+		return size + "px";
+	}
+
+	private async void SlideStatus()
+	{
+		if (AllowChanges) 
+		{
+			slideOverStars = !slideOverStars;
+
+			await CallBackMethod.InvokeAsync(CurrentRatingInStars);
+		}
+	}
+
+	private void HandleMouse(MouseEventArgs e)
+	{
+		if (AllowChanges)
+		{
+			//Added Throttling for performance.
+			DateTime currentEventThrottle = DateTime.Now;
+			TimeSpan time = currentEventThrottle - this.lastEventForThrottle;
+
+			if (slideOverStars && time.TotalMilliseconds > 400)
+			{
+				int pos = (int)e.OffsetX;
+				int found = -1;
+				bool isHalf = false;
+
+				if (endPoints != null && startPoints != null)
+				{
+					for (int i = endPoints.Length - 1; i >= 0; i--)
+					{
+						if (pos > startPoints[i] && pos <= endPoints[i])
+						{
+							found = i;
+							isHalf = true;
+							break;
+						}
+					}
+
+					if (found == -1)
+					{
+						for (int i = endPoints.Length - 1; i >= 0; i--)
+						{
+							if (pos > endPoints[i])
+							{
+								found = i;
+								isHalf = false;
+								break;
+							}
+						}
+					}
+
+					FillStars(found, isHalf);
+				}
+			}
+		}
+	}
+
+	private void HandleMouseMovementChild(MouseEventArgs e, int child)
+	{
+		if (AllowChanges) {
+			DateTime currentEventThrottle = DateTime.Now;
+			TimeSpan time = currentEventThrottle - this.lastEventForThrottle;
+
+			if (slideOverStars && time.TotalMilliseconds > 400)
+			{
+				int pos = (int)e.OffsetX;
+
+				bool isHalf = (pos <= halfStarSize) ? true : false;
+
+				FillStars(child, isHalf);
+			}
+		}
+	}
+
+	private void HandleMouseClickChild(MouseEventArgs e, int child)
+	{
+		if (AllowChanges)
+		{
+			int pos = (int)e.OffsetX;
+
+			bool isHalf = (pos <= halfStarSize) ? true : false;
+
+			FillStars(child, isHalf);
+		}
+	}
+
+	private async void SelectCurrentStar() {
+		if (AllowChanges)
+		{
+			await CallBackMethod.InvokeAsync(CurrentRatingInStars);
+		}
+	}
+
+	private int[]? CalculatePointsHalfStart()
+	{
+		int[] arr = new int[totalAmountOfStars];
+
+		int total = MarginLeft;
+
+		for (int i = 0; i < arr.Length; i++)
+		{
+			if (i == 0)
+			{
+				arr[i] = total;
+			}
+			else
+			{
+				total += StarSize + MarginRight + MarginLeft;
+				arr[i] = total;
+			}
+		}
+
+		return arr;
+	}
+
+	private int[]? CalculatePointsHalfEnd()
+	{
+		int[] arr = new int[totalAmountOfStars];
+
+		int total = MarginLeft + halfStarSize;
+
+		for (int i = 0; i < arr.Length; i++)
+		{
+			if (i == 0)
+			{
+				arr[i] = total;
+			}
+			else
+			{
+				total += halfStarSize + MarginRight + MarginLeft + halfStarSize;
+				arr[i] = total;
+			}
+		}
+
+		return arr;
+	}
+
+	private void FillStars(int index, bool isHalf)
+	{
+		ResetAllHigher(index);
+
+		if (index == 0)
+		{
+			if (isHalf)
+			{
+				star1 = halfStar;
+				CurrentRatingInStars = 0.5;
+			}
+			else
+			{
+				star1 = fullStar;
+				CurrentRatingInStars = 1.0;
+			}
+		}
+
+		if (index == 1)
+		{
+			if (isHalf)
+			{
+				star1 = fullStar;
+				star2 = halfStar;
+				CurrentRatingInStars = 1.5;
+			}
+			else
+			{
+				star1 = fullStar;
+				star2 = fullStar;
+				CurrentRatingInStars = 2.0;
+			}
+		}
+
+		if (index == 2)
+		{
+			if (isHalf)
+			{
+				star1 = fullStar;
+				star2 = fullStar;
+				star3 = halfStar;
+				CurrentRatingInStars = 2.5;
+			}
+			else
+			{
+				star1 = fullStar;
+				star2 = fullStar;
+				star3 = fullStar;
+				CurrentRatingInStars = 3.0;
+			}
+		}
+
+		if (index == 3)
+		{
+			if (isHalf)
+			{
+				star1 = fullStar;
+				star2 = fullStar;
+				star3 = fullStar;
+				star4 = halfStar;
+				CurrentRatingInStars = 3.5;
+			}
+			else
+			{
+				star1 = fullStar;
+				star2 = fullStar;
+				star3 = fullStar;
+				star4 = fullStar;
+				CurrentRatingInStars = 4.0;
+			}
+		}
+
+		if (index == 4)
+		{
+			if (isHalf)
+			{
+				star1 = fullStar;
+				star2 = fullStar;
+				star3 = fullStar;
+				star4 = fullStar;
+				star5 = halfStar;
+				CurrentRatingInStars = 4.5;
+			}
+			else
+			{
+				star1 = fullStar;
+				star2 = fullStar;
+				star3 = fullStar;
+				star4 = fullStar;
+				star5 = fullStar;
+				CurrentRatingInStars = 5.0;
+			}
+		}
+	}
+
+	private void ResetAllHigher(int index)
+	{
+		if (index == -1)
+		{
+			star1 = emptyStar;
+			star2 = emptyStar;
+			star3 = emptyStar;
+			star4 = emptyStar;
+			star5 = emptyStar;
+			CurrentRatingInStars = 0.0;
+		}
+
+		if (index == 0)
+		{
+			star2 = emptyStar;
+			star3 = emptyStar;
+			star4 = emptyStar;
+			star5 = emptyStar;
+		}
+
+		if (index == 1)
+		{
+			star3 = emptyStar;
+			star4 = emptyStar;
+			star5 = emptyStar;
+		}
+
+		if (index == 2)
+		{
+			star4 = emptyStar;
+			star5 = emptyStar;
+		}
+
+		if (index == 3)
+		{
+			star5 = emptyStar;
+		}
+	}
+
+	private string[] GetStartTypeToUse(int type) 
+	{
+		if(type == 0) 
+		{
+			return new String[] { "../images/full_star_empty.png", "../images/full_star_filled.png", "../images/full_star_half.png", };
+		}
+
+		if (type == 1)
+		{
+			return new String[] { "../images/border_star_empty.png", "../images/border_star_filled.png", "../images/border_star_half.png",  };
+		}
+
+		if(type == 2)
+		{
+			if (CustomStarImagesToUse != null && CustomStarImagesToUse?.Length == 3)
+			{
+				return CustomStarImagesToUse;
+			}
+		}
+
+		return new String[] { "../images/full_star_empty.png", "../images/full_star_filled.png", "../images/full_star_half.png", };
+	}
+
+	protected override void OnParametersSet()
+	{
+		halfStarSize = StarSize / 2;
+
+		startStyle = "margin-left:" + GetPixels(MarginLeft) + ";margin-right:" + GetPixels(MarginRight) + ";";
+		starSizestr = GetPixels(StarSize);
+
+		string[] starImages = GetStartTypeToUse(StarTypeToUse);
+
+		emptyStar = starImages[0];
+		fullStar = starImages[1];
+		halfStar = starImages[2];		
+
+		star1 = emptyStar;
+		star2 = emptyStar;
+		star3 = emptyStar;
+		star4 = emptyStar;
+		star5 = emptyStar;
+
+		if (CurrentRatingInStars > (double)0.0)
+		{
+			int fullStars = (int) CurrentRatingInStars / 1;
+			bool isHalf = (CurrentRatingInStars % (double) 1.0 == 0.5) ? true : false;
+
+			if (!isHalf)
+			{
+				fullStars--;
+			}
+
+			FillStars(fullStars, isHalf);
+		}
+
+		if (!string.IsNullOrEmpty(BackgroundColor))
+		{
+			BackgroundColor = "background-color:" + BackgroundColor;
+		}
+
+		if(!AllowChanges)
+		{
+			disableHoverOnStar += "starHoverDisable";
+		}
+
+	}
+
+	protected override void OnAfterRender(bool isFirst) 
+	{
+		if(AllowChanges)
+		{
+			startPoints = CalculatePointsHalfStart();
+			endPoints = CalculatePointsHalfEnd();
+		}		
+	}
+
+}

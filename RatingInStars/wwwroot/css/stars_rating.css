@@ -1,0 +1,36 @@
+﻿/*
+ * Stars Rating.
+ *
+ */
+
+.ratingContainer {
+    display: block;
+    width: 500px;
+    height: 100px;
+    min-height: fit-content;
+    min-width: fit-content;
+    max-height: fit-content;
+    max-width: fit-content;
+    border: 1px solid darkgrey;
+    color: white;
+    z-index: 0;
+    display:table;
+    padding-top:20px;
+    padding-bottom:20px;
+}
+
+.star {
+    display: table-row;
+    position: relative;
+    float: left;
+    cursor: default;
+    z-index: 1;
+}
+
+.star:hover{
+    cursor:pointer;
+}
+
+.starHoverDisable:hover {
+    cursor: default;
+}

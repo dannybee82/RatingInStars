@@ -1,0 +1,376 @@
+﻿/*
+ *   Menu items, etc.
+ */
+
+.ratingInStarsMenu {   
+    padding:15px;
+    padding-bottom: 20px;
+    display: table;
+    background-color: #e6e6e6;
+    border: 1px dashed #000;
+    width:100%;
+    height:fit-content;
+    margin-bottom:25px;
+}
+
+.ratingInStarsMenuTitle {
+    position: relative;
+    float: left;
+    margin-bottom: 25px;
+    width: 100%;
+    font-weight:bold;
+    font-size:24px;
+}
+
+.ratingInStarsExternalLink {
+    position: relative;
+    float: left;
+    margin-bottom: 15px;
+    width: 100%;
+    font-weight: bold;
+}
+
+    .ratingInStarsExternalLink a {
+        font-weight: normal;
+    }
+
+    .ratingInStarsChangeColor {
+        position: relative;
+        float: left;
+        margin-bottom: 25px;
+        width: 100%;
+    }
+
+.ratingInStarsChangeColorLabel {
+    position: relative;
+    float: left;
+    width: 25%;
+    padding-top:5px;
+}
+
+.ratingInStarsChangeColorTextField {
+    position: relative;
+    float: left;
+    width: 12%;
+}
+
+    .ratingInStarsChangeColorTextField input {
+        width:15ch;
+    }
+
+    .ratingInStarsChangeColorPreview {
+        position: relative;
+        float: left;
+        width: 60px;
+        height: 30px;
+        border: 1px solid black;
+        margin-left: 15px;
+    }
+
+.ratingInStarsChangePredifinedColorsContainer {
+    margin-left:25px;
+    position: relative;
+    float: left;
+    display: block;
+    width:25%;
+}
+
+    .ratingInStarsChangePredifinedColorsContainer .ButtonSettingsMenu {
+        margin-top:0px;
+    }
+
+    .ratingInStarsChangePredifinedColorsContainer #SettingsContainer {
+        position:absolute;
+        z-index:10;
+        width:500px;
+        opacity:1.0;
+    }
+
+.ratingInStarsSelectFileButton {
+    position: relative;
+    float: left;
+    display: block;
+    width:200px;
+}
+
+    .ratingInStarsSelectFileButton input[type=file] {
+        color: transparent;
+        overflow: hidden;
+    }
+
+.ratingInStarsSelectFileButtonLabel {
+    border:1px solid darkgrey;
+    background-color:lightgrey;
+    padding: 3px;
+    border-radius:5px;
+    width:200px;
+    text-align:center;
+    color:black;
+}
+
+    .ratingInStarsSelectFileButtonLabel:hover {
+        background-color: #e6e6e6;
+        color:white;
+    }
+
+    .labelDisabled {
+        color: white;
+    }
+
+    .labelDisabled:hover {
+
+    }
+
+    .ratingInStarsPreviewPngFile {
+        float: left;
+        display: block;
+        width: 45px;
+        height: 45px;
+        position: relative;
+        margin-left: 25px;
+        margin-top: -10px;
+        margin-bottom: 15px;
+        z-index: 10;
+    }
+
+.ratingInStarsPreviewPngError {
+    float: left;
+    display: block;
+    width: 150px;
+    color:red;
+}
+
+.ratingInStarsSelectSize {
+    position: relative;
+    float: left;
+    clear: both;
+    width: 20%;
+    margin-bottom: 25px;
+    clear:right;
+}
+
+    .ratingInStarsSelectSize label {
+        margin-right: 15px;
+    }
+
+    .ratingInStarsAllowChanges {
+        position: relative;
+        float: left;
+        clear: both;
+        width: 100%;
+        margin-bottom: 25px;
+        display: block;
+    }
+
+    .ratingInStarsAllowChanges input[type=radio] {
+        margin-left: 10px;
+        margin-right: 10px;
+        padding:5px;
+    }
+            
+    .ratingInStarsFilledStars {
+        position: relative;
+        float: left;
+        clear: both;
+        width: 100%;
+        margin-bottom: 25px;
+        display: block;
+    }
+
+        .ratingInStarsFilledStars input[type=radio] {
+            margin-left: 10px;
+            margin-right: 10px;
+            padding: 5px;
+        }
+
+.ratingInStarsMargins {
+    position: relative;
+    float: left;
+    width:25%;
+    margin-bottom:25px;
+}
+
+.ratingInStarsCurrentStars {
+    position: relative;
+    float: left;
+    display:block;
+    clear:both;
+    width:100%;
+    margin-bottom:25px;
+}
+
+.ratingInStarsCurrentStarsLabel {
+    position: relative;
+    float: left;
+    display: block;
+    width: 10%;
+}
+
+.ratingInStarsCurrentStarsComponent {
+    position: relative;
+    float: left;
+    display: block;
+    width: 30%;
+}
+
+    .ratingInStarsCurrentStarsComponent .clickCounterControls {
+        float:none;
+        margin-right:0px;
+        margin-top:0px;
+        margin-bottom:15px;
+        height:auto;
+    }
+
+.inputText {
+    position: relative;
+    float: left;
+    display: block;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.inputText button {
+    background-color: green;
+    color: white;
+    padding:10px;
+    border-radius:5px;
+}
+
+    .inputText button:hover {
+        background-color: #00cc00;
+    }
+
+.ratingInStarsDemoContainer {
+    position: relative;
+    float: left;
+    display: block;
+    width: 100%;
+    height: fit-content;
+    margin-top: 15px;
+    border: 1px dashed #000;
+    padding-left:15px;
+    margin-bottom:25px;
+}
+
+.ratingInStarsDemoContainerLabel {
+    position: relative;
+    float: left;
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top:15px;    
+}
+
+.showStarsSelected {
+    margin-bottom:50px;
+}
+
+.additionalErrors {
+    position: relative;
+    float: left;
+    display: block;
+    width: 100%;
+    color: red;
+}
+
+.showRatingInStarsCodeContainer {
+    width: 100%;
+    height: fit-content;
+    position: relative;
+    float: left;
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 50px;
+    background-color: #ccc;
+    border: 1px dashed #000;
+    padding:15px;
+}
+
+.showCodeButton {
+    width: 15%;
+    position: relative;
+    float: left;
+    display: block;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+    border: 1px solid black;
+    cursor: pointer;
+    text-align: center;
+    padding: 5px;
+    margin-bottom: 50px;
+}
+
+    .showCodeButton:hover {
+        background-color: white;
+        border: 1px solid blue;
+    }
+
+    .showCodeFileNameOrDataString {
+        width: 45%;
+        position: relative;
+        float: left;
+        display: block;
+        padding-left: 25px;
+    }
+
+.showCodeFileNameOrDataString input{
+    margin-left:25px;
+}
+
+        .showCodeFileNameOrDataString label {
+            margin-left: 10px;
+        }
+
+        .showCodeLabel {
+            width: 100%;
+            position: relative;
+            float: left;
+            display: block;
+            padding-bottom: 25px;
+        }
+
+.showCodeTheCode {
+    width: 100%;
+    position: relative;
+    float: left;
+    display: block;
+    margin-bottom: 25px;
+    border: 1px dashed black;
+    padding: 15px;
+    background-color: ivory;
+    border-radius: 5px;
+}
+
+.showCodeTheCode code {
+    width:100%;
+    white-space:pre-wrap;
+    display:block;
+    color:blue;
+    background-color:ivory;
+    word-wrap:anywhere;    
+}
+
+.showCodePreparedImages {
+    width: 100%;
+    position: relative;
+    float: left;
+    display: block;
+    margin-bottom:50px;
+}
+
+.showCodePreparedImagesLabel {
+    width: 100%;
+    position: relative;
+    float: left;
+    display: block;
+    clear:both;
+    margin-bottom:25px;
+}
+
+.showCodePreparedImagesPNG {
+    width: 25%;
+    position: relative;
+    float: left;
+    display: block;
+    margin-left:25px;
+}
